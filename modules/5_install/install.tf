@@ -105,7 +105,7 @@ resource "null_resource" "config" {
     provisioner "remote-exec" {
         inline = [
             "echo 'Running ocp4-helpernode playbook...'",
-            "cd ocp4-helpernode && ansible-playbook -e @helpernode_vars.yaml tasks/main.yml ${var.ansible_extra_options}"
+            #"cd ocp4-helpernode && ansible-playbook -e @helpernode_vars.yaml tasks/main.yml ${var.ansible_extra_options}"
         ]
     }
 }
@@ -142,7 +142,7 @@ resource "null_resource" "install" {
     provisioner "remote-exec" {
         inline = [
             "echo 'Running ocp install playbook...'",
-            "cd ocp4-playbooks && ansible-playbook -i inventory -e @install_vars.yaml playbooks/install.yaml ${var.ansible_extra_options}"
+            #"cd ocp4-playbooks && ansible-playbook -i inventory -e @install_vars.yaml playbooks/install.yaml ${var.ansible_extra_options}"
         ]
     }
 }
@@ -167,7 +167,7 @@ resource "null_resource" "upgrade" {
     provisioner "remote-exec" {
         inline = [
             "echo 'Running ocp upgrade playbook...'",
-            "cd ocp4-playbooks && ansible-playbook -i inventory -e @upgrade_vars.yaml playbooks/upgrade.yaml ${var.ansible_extra_options}"
+            #"cd ocp4-playbooks && ansible-playbook -i inventory -e @upgrade_vars.yaml playbooks/upgrade.yaml ${var.ansible_extra_options}"
         ]
     }
 }

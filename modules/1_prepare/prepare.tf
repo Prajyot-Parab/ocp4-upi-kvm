@@ -20,6 +20,8 @@
 
 locals {
     bastion_ip  = cidrhost(var.network_cidr, 2)
+	virtual_ip  = cidrhost(var.network_cidr, 4)
+	first_bastion_ip = 2
 }
 
 resource "libvirt_pool" "storage_pool" {
@@ -46,14 +48,15 @@ resource "libvirt_network" "network" {
     dns {
         local_only = true
         forwarders {
-            address = local.bastion_ip
+            address = cidrhost(var.network_cidr, 4)
             domain = "${var.cluster_id}.${var.cluster_domain}"
         }
     }
 }
 
 resource "libvirt_volume" "bastion" {
-    name        = "${var.cluster_id}-bastion-vol"
+    count       = var.bastion["count"]
+    name        = "${var.cluster_id}-bastion-vol-${count.index}"
     source      = var.bastion_image
     pool        = libvirt_pool.storage_pool.name
 }
@@ -66,12 +69,13 @@ resource "libvirt_volume" "storage" {
 }
 
 resource "libvirt_domain" "bastion" {
-    name        = "${var.cluster_id}-bastion"
+    count       = var.bastion["count"]
+    name        = "${var.cluster_id}-bastion-${count.index}"
     memory      = var.bastion.memory
     vcpu        = var.bastion.vcpu
 
     disk {
-        volume_id = libvirt_volume.bastion.id
+        volume_id = libvirt_volume.bastion[count.index].id
     }
 
     dynamic "disk" {
@@ -92,18 +96,26 @@ resource "libvirt_domain" "bastion" {
 
     network_interface {
         network_id  = libvirt_network.network.id
-        hostname    = "${var.cluster_id}-bastion.${var.cluster_domain}"
-        addresses   = [local.bastion_ip]
+        hostname    = "${var.cluster_id}-bastion-${count.index}.${var.cluster_domain}"
+        addresses   = [cidrhost(var.network_cidr, local.first_bastion_ip + count.index)]
         wait_for_lease  = true
+    }
+}
+
+resource "null_resource" "bastion_ip" {
+    count       = var.bastion["count"]
+    triggers    = {
+        address = cidrhost(var.network_cidr, local.first_bastion_ip + count.index)
     }
 }
 
 
 resource "null_resource" "bastion_init" {
+    count       = var.bastion["count"]
     depends_on = [libvirt_domain.bastion]
     connection {
         type        = "ssh"
-        host        = local.bastion_ip
+        host        = cidrhost(var.network_cidr, local.first_bastion_ip + count.index)
         user        = var.rhel_username
         private_key = var.private_key
         password    = var.rhel_password
@@ -132,8 +144,8 @@ resource "null_resource" "bastion_init" {
         inline = [
             "cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys",
             "sudo chmod 600 ~/.ssh/id_rsa* ~/.ssh/authorized_keys",
-            "sudo hostnamectl set-hostname --static ${lower(var.cluster_id)}-bastion.${var.cluster_domain}",
-            "echo 'HOSTNAME=${lower(var.cluster_id)}-bastion.${var.cluster_domain}' | sudo tee -a /etc/sysconfig/network > /dev/null",
+            "sudo hostnamectl set-hostname --static ${lower(var.cluster_id)}-bastion-${count.index}.${var.cluster_domain}",
+            "echo 'HOSTNAME=${lower(var.cluster_id)}-bastion-${count.index}.${var.cluster_domain}' | sudo tee -a /etc/sysconfig/network > /dev/null",
             "sudo hostname -F /etc/hostname"
         ]
     }

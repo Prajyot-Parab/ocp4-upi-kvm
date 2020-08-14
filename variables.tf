@@ -52,6 +52,7 @@ variable "rhcos_image" {
 variable "bastion" {
     # only one node is supported
     default = {
+	    count   = 1
         memory  = 8192
         vcpu    = 2
     }

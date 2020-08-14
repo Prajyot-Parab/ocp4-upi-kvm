@@ -20,7 +20,11 @@
 
 output "bastion_ip" {
     depends_on = [null_resource.bastion_init]
-    value = local.bastion_ip
+    value = null_resource.bastion_ip.*.triggers.address
+}
+
+output "virtual_ip" {
+    value = local.virtual_ip
 }
 
 output "storage_pool_name" {

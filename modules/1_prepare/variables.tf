@@ -28,6 +28,7 @@ variable "cluster_id" {
 variable "bastion" {
     # only one node is supported
     default = {
+	    count   = 1
         memory  = 4096
         vcpu    = 2
     }

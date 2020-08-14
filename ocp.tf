@@ -62,7 +62,7 @@ module "prepare" {
 module "nodes" {
     source                          = "./modules/4_nodes"
 
-    bastion_ip                      = module.prepare.bastion_ip
+    bastion_ip                      = module.prepare.virtual_ip
     cluster_domain                  = var.cluster_domain
     cluster_id                      = local.cluster_id
     bootstrap                       = var.bootstrap
@@ -84,7 +84,7 @@ module "install" {
     gateway_ip                      = cidrhost(var.network_cidr,1)
     cidr                            = var.network_cidr
     allocation_pools                = [{"start": cidrhost(var.network_cidr,3), "end": cidrhost(var.network_cidr,-2)}]
-    bastion_ip                      = module.prepare.bastion_ip
+    bastion_ip                      = module.prepare.bastion_ip[0]
     rhel_username                   = var.rhel_username
     private_key                     = local.private_key
     ssh_agent                       = var.ssh_agent

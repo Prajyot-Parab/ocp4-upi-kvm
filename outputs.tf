@@ -27,7 +27,7 @@ output "bastion_ip" {
 }
 
 output "bastion_ssh_command" {
-    value = "ssh ${var.rhel_username}@${module.prepare.bastion_ip}"
+    value = "ssh ${var.rhel_username}@${module.prepare.virtual_ip}"
 }
 
 output "bootstrap_ip" {
@@ -45,7 +45,7 @@ output "worker_ips" {
 output "etc_hosts_entries" {
     value = <<-EOF
 
-${module.prepare.bastion_ip} api.${local.cluster_id}.${var.cluster_domain} console-openshift-console.apps.${local.cluster_id}.${var.cluster_domain} integrated-oauth-server-openshift-authentication.apps.${local.cluster_id}.${var.cluster_domain} oauth-openshift.apps.${local.cluster_id}.${var.cluster_domain} prometheus-k8s-openshift-monitoring.apps.${local.cluster_id}.${var.cluster_domain} grafana-openshift-monitoring.apps.${local.cluster_id}.${var.cluster_domain} example.apps.${local.cluster_id}.${var.cluster_domain}
+${module.prepare.virtual_ip} api.${local.cluster_id}.${var.cluster_domain} console-openshift-console.apps.${local.cluster_id}.${var.cluster_domain} integrated-oauth-server-openshift-authentication.apps.${local.cluster_id}.${var.cluster_domain} oauth-openshift.apps.${local.cluster_id}.${var.cluster_domain} prometheus-k8s-openshift-monitoring.apps.${local.cluster_id}.${var.cluster_domain} grafana-openshift-monitoring.apps.${local.cluster_id}.${var.cluster_domain} example.apps.${local.cluster_id}.${var.cluster_domain}
 EOF
 }
 

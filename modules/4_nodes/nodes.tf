@@ -19,8 +19,8 @@
 ################################################################
 
 locals {
-    bootstrap_ip    = cidrhost(var.network_cidr, 3)
-    first_master_ip = 4
+    bootstrap_ip    = cidrhost(var.network_cidr, 5)
+    first_master_ip = 6
     first_worker_ip = 11
 }
 
