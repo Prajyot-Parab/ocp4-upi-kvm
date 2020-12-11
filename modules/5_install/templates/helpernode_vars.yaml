@@ -41,3 +41,13 @@ ocp_installer: "${install_tarball}"
 
 # This is required for latest helpernode. TODO: Remove when https://github.com/RedHatOfficial/ocp4-helpernode/pull/140 is merged
 helm_source: "https://get.helm.sh/helm-v3.4.0-linux-ppc64le.tar.gz"
+%{ if local_registry.enable_local_registry }
+setup_registry:
+  deploy: true
+  autosync_registry: true
+  registry_image: "${local_registry.registry_image}"
+  local_repo: "${local_registry.ocp_release_repo}"
+  product_repo: "openshift-release-dev"
+  release_name: "ocp-release"
+  release_tag: "${local_registry.ocp_release_tag}"
+%{ endif }

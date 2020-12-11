@@ -105,6 +105,9 @@ module "install" {
     openshift_install_tarball       = var.openshift_install_tarball
     openshift_client_tarball        = var.openshift_client_tarball
     storage_type                    = var.storage_type
+    enable_local_registry           = var.enable_local_registry
+    local_registry_image            = var.local_registry_image
+    ocp_release_tag                 = var.ocp_release_tag
     release_image_override          = var.release_image_override
     helpernode_tag                  = var.helpernode_tag
     install_playbook_tag            = var.install_playbook_tag
